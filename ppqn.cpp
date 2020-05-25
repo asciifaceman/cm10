@@ -36,11 +36,13 @@ float ppqnFromBPM (int bpm) {
 }
 
 // bpmFromPPQN returns the BPM from an inputted ppqn from sync
+// input using MIDI PPQN
 int bpmFromPPQN (float readppqn) {
     return abs(ppqnBaseline / (readppqn * ppqn));
 }
 
-// bpmTickDuration returns the pulses per beat
+// bpmTickDuration returns the ms per pulse 
+// but this may be deprecated as its not ppqn
 float bpmTickDuration (int bpm) {
     return ppqnBaseline / bpm;
 }
