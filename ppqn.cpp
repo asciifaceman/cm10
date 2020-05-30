@@ -7,11 +7,6 @@
 #include "ppqn.h"
 #include "config.h"
 
-const int ppqnBaseline = 60000;
-const int ppqn = 24;
-const int minInputValue = 0;
-const int maxInputValue = 1023;
-
 // bpmDifference returns the difference 
 // between the min and max BPM values
 int bpmDifference() {
@@ -21,7 +16,7 @@ int bpmDifference() {
 // bpmFromAnalog calculates BPM based on a % between min and max bpm
 // from analog input
 float bpmFromAnalog (int value) {
-    return (float((float) value / maxInputValue) * (bpmDifference())) + MIN_BPM;
+    return (float((float) value / ANALOG_MAX) * (bpmDifference())) + MIN_BPM;
 }
 
 // percentageFromAnalog calculates an arbitrary percentage
@@ -32,17 +27,17 @@ float percentageFromAnalog (int value) {
 
 // ppqnFromBPM returns the pulses per quarter note
 float ppqnFromBPM (int bpm) {
-    return ppqnBaseline / (bpm * ppqn);
+    return ONESECOND / (bpm * ppqn);
 }
 
 // bpmFromPPQN returns the BPM from an inputted ppqn from sync
 // input using MIDI PPQN
 int bpmFromPPQN (float readppqn) {
-    return abs(ppqnBaseline / (readppqn * ppqn));
+    return abs(ONESECOND / (readppqn * ppqn));
 }
 
 // bpmTickDuration returns the ms per pulse 
 // but this may be deprecated as its not ppqn
 float bpmTickDuration (int bpm) {
-    return ppqnBaseline / bpm;
+    return ONESECOND / bpm;
 }
