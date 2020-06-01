@@ -19,7 +19,7 @@ int maxCount = 95;
 bool running = false;
 bool ready = false;
 bool has_sync = false;
-bool show_bpm = false;
+bool show_bpm = true;
 
 unsigned long cycle_start;
 unsigned long cycle_stop;
@@ -97,7 +97,9 @@ void step_high() {
 if (show_bpm){
 #if HAS_SCREEN
     Serial.println("updating screen..");
-    display_update(BPM, has_sync);
+    //display_update(BPM, has_sync);
+    char text_test[5] = {'B', 'P', 'M', ':', '\0'};
+    update_display(text_test);
     Serial.println("done");
 #endif
 }

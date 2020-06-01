@@ -15,6 +15,8 @@ void setup_display() {
   display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDR);
   Wire.setClock(400000);
   display.clearDisplay();
+  display.setTextColor(WHITE, BLACK);
+  display.setTextSize(1);
   display.display();
 }
 
@@ -23,6 +25,19 @@ void small_text(String text, int x, int y) {
   display.setTextSize(1);
   display.print(text);
 }
+
+void update_display(char top[5]) {
+  display.setCursor(0, 0);
+  display.println(top);
+  //display.setCursor(0, 16);
+  //display.print(bottom);
+  display.display();
+}
+
+//char[128] create_display_line(){
+//  char[128] line;
+//  return line;
+//}
 
 void display_update (int bpm, bool active_sync) {
   display.setTextColor(WHITE, BLACK);
