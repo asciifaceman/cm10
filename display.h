@@ -1,5 +1,7 @@
 #pragma once
 
 void setup_display ( );
-void display_update (int, bool);
-void update_display(char[5]);
+void display_status(bool, int, unsigned long, float);
+void small_text(String, int, int);
+void large_text(String, int, int);
+void clear_display();

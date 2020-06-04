@@ -44,7 +44,7 @@
 #define QUARTER_TRIPLET 10
 #define EIGTH_NOTE 11
 #define SIXTEENTH_NOTE 12
-#define SIXTEENGTH_TRIPLET 13
+#define SIXTEENTH_TRIPLET 13
 
 /*
 * D2 (interrupt) - Clock Reset (no reboot)

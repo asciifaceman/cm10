@@ -10,7 +10,7 @@ This clock was designed with MIDI Sync IO in mind, thus the core of the clock tr
 Currently this project is locked into Arduino Nano due to writing directly to port registers. I intend on adding more functionality to support other boards, however I don't own any and cannot test yet.
 
 ### Ports
-* D2 (interrupt) - Clock Reset (no reboot)
+* D2 (interrupt) - Clock halt/Reset (no reboot)
 * D3 (interrupt)
 * D4 (T) - SYNC IN
 * D5 (T) - SYNC OUT
@@ -34,7 +34,7 @@ Codewise, these are represented across two bytes:
 * Course BPM Tune
 * Pulse Width (duration)
 * SYNC IN
-* RESET
+* HALT/RESET
 
 ### OUTPUTS
 * SYNC OUT
@@ -49,6 +49,7 @@ Codewise, these are represented across two bytes:
 
 ### OLED Screen
 This project is set up to support a 128x64 I2C screen via the Adafruit library.
+It only displays when the clock is halted by the button input on D2
 
 # Configuration
 Configuration is provided dby [config.h](config.h)

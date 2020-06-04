@@ -1,7 +1,8 @@
 /*
  * CM10 Modular Synth Clock
  * Written by Charles (asciifaceman) Corbett
- * Special thanks to Naftuli Kay
+ * 
+ * Special thanks to Naftuli Kay & Karl Q. for teaching me bitbashing
  * 
  */
 #include <SimpleTimer.h>
@@ -11,6 +12,7 @@
 #include "config.h"
 #include "cycle.h"
 #include "display.h"
+#include "sync.h"
 
 // timer instantiation
 SimpleTimer timer;
@@ -18,11 +20,16 @@ int count = 0;
 int maxCount = 95;
 bool running = false;
 bool ready = false;
+bool halted = false;
 bool has_sync = false;
-bool show_bpm = true;
+bool screen_enabled = true;
 
 unsigned long cycle_start;
 unsigned long cycle_stop;
+unsigned long duration;
+float duration_percent;
+
+static uint32_t lastStop = 0;
 
 int BPM;
 
@@ -42,11 +49,17 @@ void setup(){
     pinMode(QUARTER_TRIPLET, OUTPUT);
     pinMode(EIGTH_NOTE, OUTPUT);
     pinMode(SIXTEENTH_NOTE, OUTPUT);
-    pinMode(SIXTEENGTH_TRIPLET, OUTPUT);
-    attachInterrupt(CLOCK_RESET, hard_reset, RISING);
+    pinMode(SIXTEENTH_TRIPLET, OUTPUT);
+
+    // reset - on rising pause the clock and enable display
+    // reset - on falling reset the clock to 0 and start it again
+ 
+    attachInterrupt(digitalPinToInterrupt(CLOCK_RESET), display_interrupt, RISING);
+
 #if HAS_SCREEN
         setup_display();
 #endif
+    ready = true;
 #if DEBUG
     Serial.begin(115200);
     Serial.println("Booted...");
@@ -55,27 +68,33 @@ void setup(){
 
 void loop() {
     if (!ready) {
-        // set up screen and get initial BPM
-        ready = true;
+        if (halted){
+          if (screen_enabled) {
+            Serial.println("System paused for screen updates");
+            // display screen data for setting updates feedback loop
+            display_screen_data();
+          } 
+        }
     } else {
         if (!running) {
-            Serial.println("Starting...");
-            step_high();
-            running = true;
+            if (!halted){
+              Serial.println("Starting...");
+              clear_display();
+              step_high();
+              running = true;
+            }
         }
     }
     timer.run();
 }
 
 void step_high() {
-    // get analog readings for BPM and duration
-    int bpm_input = analogFilteredRead(BPM_IN);
-    int duration_input = analogFilteredRead(DUR_IN);
-    BPM = round(bpmFromAnalog(bpm_input));
-    float duration_percent = percentageFromAnalog(duration_input);
-    //unsigned long duration = bpmTickDuration(BPM * 2);
-    unsigned long duration = ppqnFromBPM(BPM);
+    if (halted){
+      return;
+    }
 
+    // get analog readings and cast them
+    read_analog_input();
 
     // get SYNC in if applicable
 
@@ -94,16 +113,6 @@ void step_high() {
     PORTD = state.D;
     PORTB = state.B;
 
-if (show_bpm){
-#if HAS_SCREEN
-    Serial.println("updating screen..");
-    //display_update(BPM, has_sync);
-    char text_test[5] = {'B', 'P', 'M', ':', '\0'};
-    update_display(text_test);
-    Serial.println("done");
-#endif
-}
-
 #if DEBUG
     Serial.print("BPM: ");
     Serial.println(BPM);
@@ -113,6 +122,30 @@ if (show_bpm){
     Serial.println(cycle_stop);
     Serial.print("Step: ");
     Serial.println(count);
+    Serial.print("PW: ");
+    Serial.print(duration_percent);
+    Serial.println("%");
+#endif
+}
+
+void read_analog_input(){
+    // get analog readings for BPM and duration
+    int bpm_input = analogFilteredRead(BPM_IN);
+    int duration_input = analogFilteredRead(DUR_IN);
+
+    // determine bpm and duration percentage
+    BPM = round(bpmFromAnalog(bpm_input));
+    duration_percent = percentageFromAnalog(duration_input);
+    duration = ppqnFromBPM(BPM);
+}
+
+void display_screen_data() {
+#if HAS_SCREEN
+    // Update screen with details
+    Serial.println("updating screen..");
+    read_analog_input();
+    display_status(has_sync, BPM, duration, duration_percent);
+    Serial.println("done");
 #endif
 }
 
@@ -128,20 +161,52 @@ void step_low() {
 }
 
 // soft reset resets the counter and lets the timeouts manage
-// the next iteration
+// the next iteration - this would be a non-interrupt lazy operation
 void soft_reset() {
     Serial.println("soft reset");
     count = 0;
 }
 
-// hard reset resets the counter and forces and resets timers
-void hard_reset() {
-    Serial.println("hard reset");
-    count = 0;
-    for (int y=0; y < timer.getNumTimers(); y++) {
-        timer.deleteTimer(y);
+// display_interrupt fires on a HIGH signal to interrupt pin D2
+// it halts the clock, kills timers, and activates the display
+void display_interrupt() {
+  // Software debounce
+  if ( millis() - lastStop < 200) {
+    return;
+  }
+  lastStop = millis();
+  
+  if (halted){
+#if DEBUG
+    Serial.println("Releasing halt");
+#endif
+    halted = false;
+    ready = true;
+    screen_enabled = false;
+    soft_reset();
+  } else {
+#if DEBUG
+    Serial.println("Halted counter to display data");
+#endif
+    halted = true;
+    ready = false;
+    running = false;
+    kill_timers();
+    screen_enabled = true;
+  }
+}
+
+// kill_timers iterates and deletes the running timers
+void kill_timers() {
+    Serial.println("asked to kill timers");
+    if (timer.getNumTimers() > 0){
+      Serial.println("killing timers");
+      for (int y=0; y < timer.getNumTimers(); y++) {
+          timer.deleteTimer(y);
+      }
+    } else {
+      Serial.println("no timers to kill");
     }
-    step_high();
 }
 
 // analogFilteredRead samples from analogReadCount number
