@@ -41,7 +41,7 @@ This clock is currently locked into the Arduino Nano architecture/format due to 
 * D13 -  Sixteenth Triplet
 
 ## Data
-The clock data is stored in a `array[95]` of `uint8_t`. Each `uint8_t` represents a single step in the 96 step cycle of a whole note. This is visualized in [static/24ppqn-Subdivisions.pdf](static/24ppqn-Subdivisions.pdf) which was also the data source for determining the step sequence for this project.
+The clock data is stored in a `array[96]` of `uint8_t`. Each `uint8_t` represents a single step in the 96 step cycle of a whole note. This is visualized in [static/24ppqn-Subdivisions.pdf](static/24ppqn-Subdivisions.pdf) which was also the data source for determining the step sequence for this project.
 
 note: the pdf defines a 1/32nd note that there were no port registers remaining for.
 
