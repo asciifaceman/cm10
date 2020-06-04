@@ -1,5 +1,9 @@
 # CM10 Clock - Modular Synth Core Clock
 
+ <p align="center"> 
+    <img width="350px" src="static/cm10-mcs.png"" alt="cm10 logo">
+ </p>
+
 # About me
 This is my first C++ project, and my first serious Ardudino project. If I'm doing anything really stupid, please open a tracker issue - I want to know.
 
