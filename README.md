@@ -1,7 +1,7 @@
 # CM10 Clock - Modular Synth Core Clock
 
  <p align="center"> 
-    <img width="350px" src="static/cm10-mcs.png"" alt="cm10 logo">
+    <img width="450px" src="static/cm10-mcs.png"" alt="cm10 logo">
  </p>
 
 # About me
