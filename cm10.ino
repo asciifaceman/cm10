@@ -163,7 +163,11 @@ void read_analog_input(){
     if (difference > max_pulse_latency) {
       has_sync = false;
     } else {
-      has_sync = true;  
+      if (!has_sync){
+        kill_timers();
+        soft_reset();
+        has_sync = true;
+      }
     }
 
     // get SYNC in if applicable
