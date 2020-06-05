@@ -34,6 +34,7 @@
 #define DUR_IN A1
 
 #define CLOCK_RESET 2
+#define CLOCK_IN 3
 #define SYNC_IN 4
 #define SYNC_OUT 5
 

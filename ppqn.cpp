@@ -33,7 +33,14 @@ float ppqnFromBPM (int bpm) {
 // bpmFromPPQN returns the BPM from an inputted ppqn from sync
 // input using MIDI PPQN
 int bpmFromPPQN (float readppqn) {
-    return abs(ONESECOND / (readppqn * ppqn));
+    int bpm_pre = abs(ONESECOND / (readppqn * ppqn));
+    // TODO: Make this nicer 
+    if (bpm_pre < MIN_BPM){
+      return MIN_BPM;
+    } else if (bpm_pre > MAX_BPM){
+      return MAX_BPM;
+    }
+    return bpm_pre;
 }
 
 // bpmTickDuration returns the ms per pulse 

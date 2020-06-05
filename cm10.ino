@@ -31,6 +31,12 @@ float duration_percent;
 
 static uint32_t lastStop = 0;
 
+// sync in
+unsigned long this_sync_pulse;
+unsigned long last_sync_pulse;
+int sync_period;
+unsigned long max_pulse_latency = 400; // after this turn sync off
+
 int BPM;
 
 /*
@@ -55,6 +61,7 @@ void setup(){
     // reset - on falling reset the clock to 0 and start it again
  
     attachInterrupt(digitalPinToInterrupt(CLOCK_RESET), display_interrupt, RISING);
+    attachInterrupt(digitalPinToInterrupt(CLOCK_IN), accept_sync_pulse, RISING);
 
 #if HAS_SCREEN
         setup_display();
@@ -64,6 +71,14 @@ void setup(){
     Serial.begin(115200);
     Serial.println("Booted...");
 #endif
+}
+
+void accept_sync_pulse() {
+  last_sync_pulse = this_sync_pulse;
+  this_sync_pulse = millis();
+  if (this_sync_pulse > last_sync_pulse){
+    sync_period = round(this_sync_pulse - last_sync_pulse);  
+  }
 }
 
 void loop() {
@@ -96,8 +111,6 @@ void step_high() {
     // get analog readings and cast them
     read_analog_input();
 
-    // get SYNC in if applicable
-
     // TODO
 
     // determine cycle rate for start/stop
@@ -125,6 +138,14 @@ void step_high() {
     Serial.print("PW: ");
     Serial.print(duration_percent);
     Serial.println("%");
+    Serial.print("Sync: ");
+    Serial.print(this_sync_pulse);
+    Serial.print(" - ");
+    Serial.print(last_sync_pulse);
+    Serial.print(" = ");
+    Serial.println(sync_period);
+    Serial.print("Sync: ");
+    Serial.println(has_sync);
 #endif
 }
 
@@ -137,6 +158,25 @@ void read_analog_input(){
     BPM = round(bpmFromAnalog(bpm_input));
     duration_percent = percentageFromAnalog(duration_input);
     duration = ppqnFromBPM(BPM);
+
+    unsigned long difference = this_sync_pulse - last_sync_pulse;
+    if (difference > max_pulse_latency) {
+      has_sync = false;
+    } else {
+      has_sync = true;  
+    }
+
+    // get SYNC in if applicable
+    if (has_sync) {
+      integrate_sync();
+    }
+
+}
+
+void integrate_sync(){
+  // this may cause problems after 20 minutes when the millis() resets but I'll make it better once it works
+  duration = sync_period;
+  BPM = round(bpmFromPPQN(sync_period));
 }
 
 void display_screen_data() {
