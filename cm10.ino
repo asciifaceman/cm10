@@ -57,9 +57,6 @@ void setup(){
     pinMode(SIXTEENTH_NOTE, OUTPUT);
     pinMode(SIXTEENTH_TRIPLET, OUTPUT);
 
-    // reset - on rising pause the clock and enable display
-    // reset - on falling reset the clock to 0 and start it again
- 
     attachInterrupt(digitalPinToInterrupt(CLOCK_RESET), display_interrupt, RISING);
     attachInterrupt(digitalPinToInterrupt(CLOCK_IN), accept_sync_pulse, RISING);
 
@@ -177,6 +174,8 @@ void read_analog_input(){
 
 }
 
+// integrate_sync overrides the analog inputs with the synced
+// input but will need a bit of work for accuracy
 void integrate_sync(){
   // this may cause problems after 20 minutes when the millis() resets but I'll make it better once it works
   duration = sync_period;
