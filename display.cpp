@@ -2,15 +2,21 @@
  * OLED Display
  */
 #include <Arduino.h>
-#include "Adafruit_GFX.h"
-#include "Adafruit_SSD1306.h"
 
 #include "config.h"
 #include "display.h"
+
 #if HAS_SCREEN
+#include "Adafruit_GFX.h"
+#include "Adafruit_SSD1306.h"
+
 
 Adafruit_SSD1306 display(0);
 
+/*
+ * setup_display does initial configuration and wipe of the display
+ * called in setup
+ */
 void setup_display() {
   display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDR);
   Wire.setClock(400000);
@@ -20,23 +26,35 @@ void setup_display() {
   display.display();
 }
 
+/*
+ * clear_display is just a basic wipe
+ */
 void clear_display(){
   display.clearDisplay();
   display.display();
 }
 
+/*
+ * small_text sets size to 1 and prints text at x,y
+ */
 void small_text(String text, int x, int y) {
   display.setCursor(x, y);
   display.setTextSize(1);
   display.print(text);
 }
 
+/*
+ * large_text sets size to 2 and prints text at x,y
+ */
 void large_text(String text, int x, int y) {
   display.setCursor(x, y);
   display.setTextSize(2);
   display.print(text);  
 }
 
+/*
+ * display_status updates the screen with sync status, bpm, duration, and pulse duration
+ */
 void display_status(bool active_sync, int bpm, unsigned long duration, float duration_perc) {
   display.clearDisplay();
   // Sync on or off
@@ -70,32 +88,6 @@ void display_status(bool active_sync, int bpm, unsigned long duration, float dur
   pulse_duration.concat("%");
   small_text(pulse_duration, 72, 25);
 
-   display.display();
+  // update
+  display.display();
 }
-
-
-//char[128] create_display_line(){
-//  char[128] line;
-//  return line;
-//}
-
-//void display_update (int bpm, bool active_sync) {
-//  display.setTextColor(WHITE, BLACK);
-//  if (active_sync) {
-//    small_text("SYNC> ON", 0, 0);
-//  } else {
-//    small_text("SYNC> OFF", 0, 0);
-//  }
-//  
-//  //small_text("CM10 CLOCK", 64, 0);
-//
-//  display.setCursor(16, 16);
-//  display.setTextSize(2);
-//
-//  display.print(String(bpm, DEC));
-//  
-//  display.print(" BPM");
-//  display.display();
-//}
-
-#endif

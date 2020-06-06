@@ -13,4 +13,3 @@ float ppqnFromBPM (int);
 float bpmFromAnalog (int);
 float percentageFromAnalog (int);
 float bpmTickDuration (int);
-int bpmFromPPQN(float);

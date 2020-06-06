@@ -2,7 +2,9 @@
  * CM10 Modular Synth Clock
  * Written by Charles (asciifaceman) Corbett
  * 
- * Special thanks to Naftuli Kay & Karl Q. for teaching me bitbashing
+ * Special thanks to Naftuli Kay & Karl Q. for teaching me bitbashing and portbashing
+ * 
+ * github.com/asciifaceman/cm10
  * 
  */
 #include <SimpleTimer.h>

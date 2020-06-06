@@ -23,6 +23,7 @@
 #define MAX_BPM 220
 
 // bias for pulse width, shortest pulse
+// TODO: Deprecate
 #define BIAS 25
 
 // screen
@@ -33,9 +34,12 @@
 #define BPM_IN A0
 #define DUR_IN A1
 
+// interrupts
 #define CLOCK_RESET 2
-#define CLOCK_IN 3
-#define SYNC_IN 4
+#define CLOCK_IN 3 
+
+// clock outputs
+#define UNUSED_A 4
 #define SYNC_OUT 5
 
 #define WHOLE_NOTE 6
@@ -46,18 +50,3 @@
 #define EIGTH_NOTE 11
 #define SIXTEENTH_NOTE 12
 #define SIXTEENTH_TRIPLET 13
-
-/*
-* D2 (interrupt) - Clock Reset (no reboot)
-* D3 (interrupt)
-* D4 (T) - SYNC IN
-* D5 (T) - SYNC OUT
-* D6 (1/1) - Whole Note
-* D7 (1/2) - Half note
-* D8 (1/3) - Triplet
-* D9 (1/4) - Quarter Note
-* D10 (1/4-3) - Quarter Triplet
-* D11 (1/8) - Eigth Note
-* D12 (1/16) - Sixteenth Note
-* D13 (1/16-3) - Sixteenth Triplet
-*/

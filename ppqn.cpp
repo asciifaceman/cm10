@@ -25,26 +25,20 @@ float percentageFromAnalog (int value) {
     return abs(((float)value - (BIAS * 2))) / 1023;
 }
 
-// ppqnFromBPM returns the pulses per quarter note
+// ppqnFromBPM returns the pulses per quarter note for a given BPM
 float ppqnFromBPM (int bpm) {
     return ONESECOND / (bpm * ppqn);
 }
 
 // bpmFromPPQN returns the BPM from an inputted ppqn from sync
-// input using MIDI PPQN
+// input using MIDI PPQN (24 ppq)
 int bpmFromPPQN (float readppqn) {
     int bpm_pre = abs(ONESECOND / (readppqn * ppqn));
-    // TODO: Make this nicer 
+    // TODO: Make this nicer or part of the math itself
     if (bpm_pre < MIN_BPM){
       return MIN_BPM;
     } else if (bpm_pre > MAX_BPM){
       return MAX_BPM;
     }
     return bpm_pre;
-}
-
-// bpmTickDuration returns the ms per pulse 
-// but this may be deprecated as its not ppqn
-float bpmTickDuration (int bpm) {
-    return ONESECOND / bpm;
 }
